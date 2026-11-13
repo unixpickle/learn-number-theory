@@ -20,6 +20,11 @@ import Testing
   testModularInverseFn(modulus: 89, fn: { $0.invert(algorithm: .recursiveNaive) })
 }
 
+@Test func modularInverseRecursive() {
+  testModularInverseFn(modulus: 23, fn: { $0.invert(algorithm: .recursive) })
+  testModularInverseFn(modulus: 89, fn: { $0.invert(algorithm: .recursive) })
+}
+
 func testModularInverseFn(modulus: Int, fn: (ModInt) -> ModInt) {
   for i in 1..<modulus {
     let n = ModInt(value: i, modulus: modulus)
