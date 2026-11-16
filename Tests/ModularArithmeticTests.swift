@@ -27,6 +27,15 @@ import Testing
   testModularInverseFn(modulus: 89, fn: { $0.invert(algorithm: .recursive) })
 }
 
+@Test func modularInverseExtendedEuclid() {
+  testModularInverseFn(modulus: 23, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
+  testModularInverseFn(modulus: 89, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
+  testModularInverseFn(modulus: 199, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
+  testModularInverseFn(modulus: 199 * 3, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
+  testModularInverseFn(
+    modulus: 3 * 3 * 5 * 7, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
+}
+
 func testModularInverseFn(modulus: Int, fn: (ModInt) -> ModInt?) {
   for i in 1..<modulus {
     let n = ModInt(value: i, modulus: modulus)

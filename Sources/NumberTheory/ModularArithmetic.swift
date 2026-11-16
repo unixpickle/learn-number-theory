@@ -7,6 +7,7 @@ public struct ModInt: Equatable {
 
   public enum InversionAlgorithm {
     case bruteForce
+    case extendedEuclid
   }
 
   public let value: Int
@@ -96,6 +97,26 @@ public struct ModInt: Equatable {
         }
       }
       return nil
+    case .extendedEuclid:
+      // x is always the larger of the pair
+      var x = modulus
+      var y = value
+
+      // xcoeff tells us (a, b) that gives x = a*x0 + b*y0
+      // ycoeff tells us (a, b) that gives y = a*x0 + b*y0
+      var xcoeff = (1, 0)
+      var ycoeff = (0, 1)
+
+      while y > 0 {
+        let divided = x / y
+        (x, y) = (y, x - y * divided)
+        (xcoeff, ycoeff) = (ycoeff, (xcoeff.0 - ycoeff.0 * divided, xcoeff.1 - ycoeff.1 * divided))
+      }
+      if x != 1 {
+        // there is a common factor
+        return nil
+      }
+      return with(value: xcoeff.1)
     }
   }
 }
