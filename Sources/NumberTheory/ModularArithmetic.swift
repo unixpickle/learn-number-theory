@@ -1,8 +1,12 @@
 public struct ModInt: Equatable {
-  public enum InversionAlgorithm {
+  public enum PrimeInversionAlgorithm {
     case bruteForce
     case recursiveNaive
     case recursive
+  }
+
+  public enum InversionAlgorithm {
+    case bruteForce
   }
 
   public let value: Int
@@ -40,7 +44,7 @@ public struct ModInt: Equatable {
   /// Find the multiplicative inverse for the number.
   ///
   /// This should only be used if the modulus is prime.
-  public func invert(algorithm: InversionAlgorithm) -> ModInt {
+  public func invert(algorithm: PrimeInversionAlgorithm) -> ModInt {
     switch algorithm {
     case .bruteForce:
       for i in 1..<modulus {
@@ -49,6 +53,7 @@ public struct ModInt: Equatable {
           return n
         }
       }
+      fatalError()
     case .recursiveNaive:
       let factor1 = with(value: 1 + modulus / value)
       let remainder = self * factor1
@@ -76,6 +81,21 @@ public struct ModInt: Equatable {
 
       return joint * lowerRemainder.invert(algorithm: algorithm)
     }
-    fatalError()
+  }
+
+  /// Find the multiplicative inverse for the number.
+  ///
+  /// This should only be used if the modulus is prime.
+  public func maybeInvert(algorithm: InversionAlgorithm) -> ModInt? {
+    switch algorithm {
+    case .bruteForce:
+      for i in 1..<modulus {
+        let n = with(value: i)
+        if (self * n).value == 1 {
+          return n
+        }
+      }
+      return nil
+    }
   }
 }
