@@ -40,7 +40,7 @@ func testModularInverseFn(modulus: Int, fn: (ModInt) -> ModInt?) {
   for i in 1..<modulus {
     let n = ModInt(value: i, modulus: modulus)
     let maybeInverse = fn(n)
-    if gcdNaive(modulus, i) == 1 {
+    if gcd(modulus, i) == 1 {
       #expect(maybeInverse != nil, "expected inverse of \(i) mod \(modulus)")
       guard let inverse = maybeInverse else {
         continue
@@ -51,14 +51,4 @@ func testModularInverseFn(modulus: Int, fn: (ModInt) -> ModInt?) {
       #expect(maybeInverse == nil)
     }
   }
-}
-
-func gcdNaive(_ a: Int, _ b: Int) -> Int {
-  var result = 1
-  for i in 1...min(a, b) {
-    if a % i == 0 && b % i == 0 {
-      result = i
-    }
-  }
-  return result
 }
