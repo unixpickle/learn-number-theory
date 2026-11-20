@@ -1,4 +1,4 @@
-public struct ModInt: Equatable {
+public struct ModInt<I: Integer>: Equatable {
   public enum PrimeInversionAlgorithm {
     case bruteForce
     case recursiveNaive
@@ -10,10 +10,10 @@ public struct ModInt: Equatable {
     case extendedEuclid
   }
 
-  public let value: Int
-  public let modulus: Int
+  public let value: I
+  public let modulus: I
 
-  public init(value: Int, modulus: Int) {
+  public init(value: I, modulus: I) {
     self.value = value
     self.modulus = modulus
   }
@@ -30,11 +30,11 @@ public struct ModInt: Equatable {
 
   public static func * (lhs: ModInt, rhs: ModInt) -> ModInt {
     precondition(lhs.modulus == rhs.modulus)
-    // TODO: deal with integer wraparound here.
+    // TODO: deal with Ieger wraparound here.
     return lhs.with(value: lhs.value * rhs.value)
   }
 
-  public func with(value: Int) -> ModInt {
+  public func with(value: I) -> ModInt {
     var value = value % modulus
     if value < 0 {
       value = (value + modulus) % modulus
@@ -75,12 +75,12 @@ public struct ModInt: Equatable {
       // to the recursive call.
       let residual = value - remainder.value
       let factor2 = with(value: value / residual - (value % residual == 0 ? 1 : 0))
-      let joint = factor1 * factor2 - (factor2 - self.with(value: 1))
+      let joI = factor1 * factor2 - (factor2 - self.with(value: 1))
 
-      let lowerRemainder = self * joint
+      let lowerRemainder = self * joI
       assert(lowerRemainder.value <= remainder.value)
 
-      return joint * lowerRemainder.invert(algorithm: algorithm)
+      return joI * lowerRemainder.invert(algorithm: algorithm)
     }
   }
 
@@ -104,8 +104,8 @@ public struct ModInt: Equatable {
 
       // xcoeff tells us (a, b) that gives x = a*x0 + b*y0
       // ycoeff tells us (a, b) that gives y = a*x0 + b*y0
-      var xcoeff = (1, 0)
-      var ycoeff = (0, 1)
+      var xcoeff: (I, I) = (1, 0)
+      var ycoeff: (I, I) = (0, 1)
 
       while y > 0 {
         let divided = x / y

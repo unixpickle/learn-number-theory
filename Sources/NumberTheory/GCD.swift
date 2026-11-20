@@ -1,4 +1,4 @@
-public func gcd(_ x: Int, _ y: Int) -> Int {
+public func gcd<I: Integer>(_ x: I, _ y: I) -> I {
   assert(x > 0 && y > 0)
   // Euclid's algorithm
   var (x, y) = (min(x, y), max(x, y))

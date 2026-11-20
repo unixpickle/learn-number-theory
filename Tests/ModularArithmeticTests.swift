@@ -36,7 +36,7 @@ import Testing
     modulus: 3 * 3 * 5 * 7, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
 }
 
-func testModularInverseFn(modulus: Int, fn: (ModInt) -> ModInt?) {
+func testModularInverseFn(modulus: Int, fn: (ModInt<Int>) -> ModInt<Int>?) {
   for i in 1..<modulus {
     let n = ModInt(value: i, modulus: modulus)
     let maybeInverse = fn(n)
