@@ -20,18 +20,20 @@ public struct ModInt<I: Integer>: Equatable {
 
   public static func + (lhs: ModInt, rhs: ModInt) -> ModInt {
     precondition(lhs.modulus == rhs.modulus)
-    return lhs.with(value: lhs.value + rhs.value)
+    return lhs.with(value: I.add(lhs.value, rhs.value, modulus: lhs.modulus))
+  }
+
+  public static prefix func - (value: ModInt) -> ModInt {
+    return value.with(value: value.modulus - value.value)
   }
 
   public static func - (lhs: ModInt, rhs: ModInt) -> ModInt {
-    precondition(lhs.modulus == rhs.modulus)
-    return lhs.with(value: lhs.value - rhs.value)
+    return lhs + (-rhs)
   }
 
   public static func * (lhs: ModInt, rhs: ModInt) -> ModInt {
     precondition(lhs.modulus == rhs.modulus)
-    // TODO: deal with Ieger wraparound here.
-    return lhs.with(value: lhs.value * rhs.value)
+    return lhs.with(value: I.multiply(lhs.value, rhs.value, modulus: lhs.modulus))
   }
 
   public func with(value: I) -> ModInt {

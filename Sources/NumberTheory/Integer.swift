@@ -1,7 +1,42 @@
-public protocol Integer: SignedInteger, Strideable<Self> {
+public protocol Integer: SignedInteger where Stride: SignedInteger {
+  static func add(_ x: Self, _ y: Self, modulus: Self) -> Self
+  static func multiply(_ x: Self, _ y: Self, modulus: Self) -> Self
+  func positiveModulus(_ modulus: Self) -> Self
+}
+
+extension Integer {
+  public func positiveModulus(_ modulus: Self) -> Self {
+    var x = self % modulus
+    if x < 0 {
+      x = x + modulus
+    }
+    return x
+  }
+}
+
+extension Integer where Self: FixedWidthInteger {
+  public static func add(_ x: Self, _ y: Self, modulus: Self) -> Self {
+    let (x, y) = (x.positiveModulus(modulus), y.positiveModulus(modulus))
+    let (partial, overflow) = x.addingReportingOverflow(y)
+    if !overflow {
+      return partial.positiveModulus(modulus)
+    }
+    return (x - modulus) + y
+  }
+
+  public static func multiply(_ x: Self, _ y: Self, modulus: Self) -> Self {
+    let (x, y) = (x.positiveModulus(modulus), y.positiveModulus(modulus))
+    let (high, low) = x.multipliedFullWidth(by: y)
+    let remainder = modulus.dividingFullWidth((high, low)).remainder
+    return remainder
+  }
 }
 
 extension Int: Integer {}
+extension Int8: Integer {}
+extension Int16: Integer {}
+extension Int32: Integer {}
+extension Int64: Integer {}
 
 public struct BigInt: Integer {
   // Each digit is in the range [0, 2^16) starting with the least
@@ -365,5 +400,13 @@ public struct BigInt: Integer {
       magnitude += 1
     }
     return sign ? -magnitude : magnitude
+  }
+
+  public static func add(_ x: Self, _ y: Self, modulus: Self) -> Self {
+    return (x + y) % modulus
+  }
+
+  public static func multiply(_ x: Self, _ y: Self, modulus: Self) -> Self {
+    return (x * y) % modulus
   }
 }
