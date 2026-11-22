@@ -92,7 +92,8 @@ private func checkAgainstInt(_ a: Int, _ b: Int) {
   #expect(power > ones)
   #expect(-power < -ones)
   // (B^16 - 1)^2 = B^32 - 2*B^16 + 1, with B = 2^16.
-  let squareDigits: [UInt16] = [1] + [UInt16](repeating: 0, count: 15)
+  let squareDigits: [UInt16] =
+    [1] + [UInt16](repeating: 0, count: 15)
     + [0xfffe] + [UInt16](repeating: .max, count: 15)
   let square = BigInt(digits: squareDigits, sign: false)
   #expect(ones * ones == square)
@@ -103,17 +104,23 @@ private func checkAgainstInt(_ a: Int, _ b: Int) {
 @Test func bigIntKnownLargeArithmetic() {
   // Independent fixtures computed with Python's arbitrary-precision integers.
   let a = BigInt(
-    digits: [0xcdef, 0x89ab, 0x4567, 0x0123, 0xcdef, 0x89ab,
-      0x4567, 0x0123, 0x3210, 0x7654, 0xba98, 0xfedc], sign: false)
+    digits: [
+      0xcdef, 0x89ab, 0x4567, 0x0123, 0xcdef, 0x89ab,
+      0x4567, 0x0123, 0x3210, 0x7654, 0xba98, 0xfedc,
+    ], sign: false)
   let b = BigInt(
     digits: [0xa987, 0xedcb, 0xdeff, 0x9abc, 0x5678, 0x1234, 0x0008], sign: false)
   let sum = BigInt(
-    digits: [0x7776, 0x7777, 0x2467, 0x9be0, 0x2467, 0x9be0,
-      0x456f, 0x0123, 0x3210, 0x7654, 0xba98, 0xfedc], sign: false)
+    digits: [
+      0x7776, 0x7777, 0x2467, 0x9be0, 0x2467, 0x9be0,
+      0x456f, 0x0123, 0x3210, 0x7654, 0xba98, 0xfedc,
+    ], sign: false)
   let product = BigInt(
-    digits: [0x6009, 0x9411, 0x8f6f, 0xe634, 0x209c, 0x708f, 0x69b5,
+    digits: [
+      0x6009, 0x9411, 0x8f6f, 0xe634, 0x209c, 0x708f, 0x69b5,
       0xf6d2, 0x98ad, 0x63cf, 0x6bd6, 0x8fac, 0x7424, 0x0848,
-      0x04b2, 0x8a1f, 0x74ce, 0x0905, 0x0008], sign: false)
+      0x04b2, 0x8a1f, 0x74ce, 0x0905, 0x0008,
+    ], sign: false)
   let quotient = BigInt(
     digits: [0xc9e1, 0xdb24, 0x7aec, 0xb591, 0xbc55, 0x1f93], sign: false)
   let remainder = BigInt(
@@ -281,10 +288,11 @@ private func checkAgainstInt(_ a: Int, _ b: Int) {
   #expect(base.distance(to: -base) == -2 * base)
   #expect(base.advanced(by: -2 * base) == -base)
   #expect(Array((base - 2)..<(base + 2)) == [base - 2, base - 1, base, base + 1])
-  #expect(Array(stride(from: base, through: base - 6, by: BigInt(-2)))
-    == [base, base - 2, base - 4, base - 6])
+  #expect(
+    Array(stride(from: base, through: base - 6, by: BigInt(-2)))
+      == [base, base - 2, base - 4, base - 6])
   #expect(gcd(21 * base, 15 * base) == 3 * base)
-  let number = ModInt<BigInt>(value: 5, modulus: 23)
+  let number = ModPrime<BigInt>(value: 5, modulus: 23)
   #expect((number + number).value == 10)
   #expect((number * number).value == 2)
   #expect(number.invert(algorithm: .bruteForce).value == 14)

@@ -12,33 +12,46 @@ import Testing
 }
 
 @Test func modularInverseBruteForce() {
-  testModularInverseFn(modulus: 23, fn: { $0.invert(algorithm: .bruteForce) })
-  testModularInverseFn(modulus: 25, fn: { $0.maybeInvert(algorithm: .bruteForce) })
-  testModularInverseFn(modulus: 10, fn: { $0.maybeInvert(algorithm: .bruteForce) })
+  testModularInverseFn(ModPrime.self, modulus: 23, fn: { $0.invert(algorithm: .bruteForce) })
+  testModularInverseFn(ModInt.self, modulus: 25, fn: { $0.maybeInvert(algorithm: .bruteForce) })
+  testModularInverseFn(ModInt.self, modulus: 10, fn: { $0.maybeInvert(algorithm: .bruteForce) })
 }
 
 @Test func modularInverseRecursiveNaive() {
-  testModularInverseFn(modulus: 23, fn: { $0.invert(algorithm: .recursiveNaive) })
-  testModularInverseFn(modulus: 89, fn: { $0.invert(algorithm: .recursiveNaive) })
+  testModularInverseFn(ModPrime.self, modulus: 23, fn: { $0.invert(algorithm: .recursiveNaive) })
+  testModularInverseFn(ModPrime.self, modulus: 89, fn: { $0.invert(algorithm: .recursiveNaive) })
 }
 
 @Test func modularInverseRecursive() {
-  testModularInverseFn(modulus: 23, fn: { $0.invert(algorithm: .recursive) })
-  testModularInverseFn(modulus: 89, fn: { $0.invert(algorithm: .recursive) })
+  testModularInverseFn(ModPrime.self, modulus: 23, fn: { $0.invert(algorithm: .recursive) })
+  testModularInverseFn(ModPrime.self, modulus: 89, fn: { $0.invert(algorithm: .recursive) })
 }
 
 @Test func modularInverseExtendedEuclid() {
-  testModularInverseFn(modulus: 23, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
-  testModularInverseFn(modulus: 89, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
-  testModularInverseFn(modulus: 199, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
-  testModularInverseFn(modulus: 199 * 3, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
   testModularInverseFn(
-    modulus: 3 * 3 * 5 * 7, fn: { $0.maybeInvert(algorithm: .extendedEuclid) })
+    ModPrime.self, modulus: 23, fn: { $0.maybeInvert(algorithm: .extendedEuclid) }
+  )
+  testModularInverseFn(
+    ModPrime.self, modulus: 89, fn: { $0.maybeInvert(algorithm: .extendedEuclid) }
+  )
+  testModularInverseFn(
+    ModPrime.self, modulus: 199, fn: { $0.maybeInvert(algorithm: .extendedEuclid) }
+  )
+  testModularInverseFn(
+    ModInt.self, modulus: 199 * 3, fn: { $0.maybeInvert(algorithm: .extendedEuclid) }
+  )
+  testModularInverseFn(
+    ModInt.self, modulus: 3 * 3 * 5 * 7, fn: { $0.maybeInvert(algorithm: .extendedEuclid) }
+  )
 }
 
-func testModularInverseFn(modulus: Int, fn: (ModInt<Int>) -> ModInt<Int>?) {
+func testModularInverseFn<T: ModIntImpl>(
+  _ t: T.Type,
+  modulus: Int,
+  fn: (T) -> T?
+) where T.I == Int {
   for i in 1..<modulus {
-    let n = ModInt(value: i, modulus: modulus)
+    let n = T(value: i, modulus: modulus)
     let maybeInverse = fn(n)
     if gcd(modulus, i) == 1 {
       #expect(maybeInverse != nil, "expected inverse of \(i) mod \(modulus)")
