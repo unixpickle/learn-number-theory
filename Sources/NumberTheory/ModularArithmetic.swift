@@ -78,6 +78,22 @@ extension ModIntImpl {
       return with(value: xcoeff.1)
     }
   }
+
+  /// Raise the number to a non-negative power.
+  public func pow(_ x: I) -> Self {
+    precondition(x >= 0)
+    var result = with(value: 1)
+    var remaining = x
+    var currentSquare = self
+    while remaining != 0 {
+      if remaining & 1 == 1 {
+        result = result * currentSquare
+      }
+      currentSquare = currentSquare * currentSquare
+      remaining >>= 1
+    }
+    return result
+  }
 }
 
 public struct ModInt<I: Integer>: ModIntImpl {

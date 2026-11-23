@@ -65,3 +65,12 @@ func testModularInverseFn<T: ModIntImpl>(
     }
   }
 }
+
+@Test func testModularExponent() {
+  #expect(ModInt<Int>(value: 13, modulus: 1337).pow(10).value == 694)
+  #expect(ModInt<Int>(value: 13, modulus: 1337).pow(1111).value == 706)
+  #expect(ModInt<Int>(value: 13, modulus: 1337).pow((7 - 1) * (191 - 1)).value == 1)
+  #expect(ModInt<Int>(value: 1234, modulus: 1337).pow((7 - 1) * (191 - 1)).value == 1)
+  #expect(ModInt<Int>(value: -1, modulus: 1337).pow(1).value == 1336)
+  #expect(ModInt<Int>(value: -1, modulus: 1337).pow(2).value == 1)
+}
