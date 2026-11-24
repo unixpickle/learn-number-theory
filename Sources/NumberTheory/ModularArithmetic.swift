@@ -120,6 +120,7 @@ public struct ModPrime<I: Integer>: ModIntImpl {
   public let modulus: I
 
   public init(value: I, modulus: I) {
+    precondition(modulus > 1)
     self.value = value
     self.modulus = modulus
   }
@@ -158,6 +159,68 @@ public struct ModPrime<I: Integer>: ModIntImpl {
       assert(lowerRemainder.value <= remainder.value)
 
       return joI * lowerRemainder.invert(algorithm: algorithm)
+    }
+  }
+
+  /// Use Euler's criterion to check if the number is square.
+  public func isSquare() -> Bool {
+    // Fermat's little theorem says x^(p-1) == 1
+    // So x^((p-1)/2) in {-1, +1}
+    // And squares fill up the available roots of x^((p-1)/2)-1=0.
+    pow((modulus - 1) / 2).value == 1
+  }
+
+  /// sqrt() computes the lower of the two square roots of the number using
+  /// Tonelli-Shanks.
+  public func sqrt() -> Self? {
+    if modulus == 2 {
+      return self
+    }
+
+    var oddComponent = modulus - 1
+    var evenPowers: I = 0
+    while oddComponent % 2 == 0 {
+      evenPowers += 1
+      oddComponent /= 2
+    }
+    assert(evenPowers > 0)
+
+    // We have that p-1 = oddComponent * 2^(evenPowers)
+    var r = pow((oddComponent + 1) / 2)
+    var t = pow(oddComponent)
+    assert(r.pow(2) == self * t, "initial relation of r and t failed")
+
+    // This is only true if a is square, otherwise it would be negative one.
+    let tTest = t.pow(1 << (evenPowers - 1))
+    if tTest.value != 1 {
+      assert(tTest.value == modulus - 1, "non-square should give -1 for Euler criterion")
+      return nil
+    }
+
+    // We want to find a deep square root of -1, i.e. a number such that when
+    // raised to 2^(evenPowers-1) is equal to -1.
+    var correction = with(value: findNonSquare()).pow(oddComponent)
+
+    // Repeatedly correct so that t requires fewer squarings to reach one.
+    for i in stride(from: evenPowers - 2, through: 0, by: -1) {
+      if t.pow(1 << i).value == modulus - 1 {
+        t = t * correction.pow(2)
+        r = r * correction
+        assert(t.pow(1 << i).value == 1, "correction did not work")
+      }
+      correction = correction.pow(2)
+    }
+
+    assert(t.value == 1)
+    return with(value: min(r.value, (-r).value))
+  }
+
+  private func findNonSquare() -> I {
+    while true {
+      let n = modulus.randomBelow()
+      if with(value: n).pow((modulus - 1) / 2).value == modulus - 1 {
+        return n
+      }
     }
   }
 }

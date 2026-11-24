@@ -2,6 +2,8 @@ public protocol Integer: SignedInteger where Stride: SignedInteger {
   static func add(_ x: Self, _ y: Self, modulus: Self) -> Self
   static func multiply(_ x: Self, _ y: Self, modulus: Self) -> Self
   func positiveModulus(_ modulus: Self) -> Self
+
+  func randomBelow() -> Self
 }
 
 extension Integer {
@@ -11,6 +13,19 @@ extension Integer {
       x = x + modulus
     }
     return x
+  }
+
+  public func randomBelow() -> Self {
+    if self <= 0 {
+      fatalError("cannot create a randomBelow the number \(self)")
+    }
+    var excess: Self = 1
+    var n = self
+    while n > Int.max {
+      excess *= 2
+      n /= 2
+    }
+    return excess * Self(exactly: (0..<Int(n)).randomElement()!)!
   }
 }
 

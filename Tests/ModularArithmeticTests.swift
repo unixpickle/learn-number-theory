@@ -74,3 +74,25 @@ func testModularInverseFn<T: ModIntImpl>(
   #expect(ModInt<Int>(value: -1, modulus: 1337).pow(1).value == 1336)
   #expect(ModInt<Int>(value: -1, modulus: 1337).pow(2).value == 1)
 }
+
+@Test func testModularSqrt() {
+  for modulus in [199, 197, 7919] {
+    var seen = Set<Int>()
+    for i in (1..<modulus) {
+      let start = ModPrime<Int>(value: i, modulus: modulus)
+      let square = start.pow(2)
+      let recovered = square.sqrt()!
+      #expect(recovered == start || -recovered == start)
+      seen.insert(square.value)
+    }
+    for i in (1..<modulus) {
+      if seen.contains(i) {
+        continue
+      }
+      // Non-squares should return nil from sqrt()
+      let n = ModPrime<Int>(value: i, modulus: modulus)
+      #expect(!n.isSquare(), "\(n)")
+      #expect(n.sqrt() == nil)
+    }
+  }
+}
