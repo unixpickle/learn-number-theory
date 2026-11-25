@@ -43,10 +43,14 @@ extension ModIntImpl {
     return Self(value: value, modulus: modulus)
   }
 
+  public func with(modulus: I) -> Self {
+    return Self(value: value, modulus: modulus)
+  }
+
   /// Find the multiplicative inverse for the number.
   ///
   /// This should only be used if the modulus is prime.
-  public func maybeInvert(algorithm: ModInverseAlgorithm) -> Self? {
+  public func maybeInvert(algorithm: ModInverseAlgorithm = .extendedEuclid) -> Self? {
     switch algorithm {
     case .bruteForce:
       for i in 1..<modulus {
